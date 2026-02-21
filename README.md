@@ -1,1 +1,1 @@
-# Eduardo Dominicini Janz
+# Exercícios, testes e outras coisas relacionadas ao curso de Dados + Git e GitHub!
