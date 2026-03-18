@@ -1,43 +1,62 @@
-def validarEntradas():
-    isValid = False
+# %%
 
-    while isValid == False:
-        entrada = input("Digite um cep para localizar: ")
-        
-        if entrada.isnumeric() and entrada != "":
+import requests
+import json
+from tqdm import tqdm
+import pandas as pd
+
+def validarEntradaCEP():
+    while True:
+        entrada = input("Digite o CEP a ser buscado: ")
+
+        if entrada.isnumeric() and entrada != "" and len(entrada) == 8:
             return entrada
         elif entrada == "":
             return 0
         else:
-            print("Entrada de CEP inválida!!!")
-            
+            print("Você deve digitar o cep corretamente!!!")
 
-
-import requests
-
-isValid = False
 ceps = []
 
+
 while True:
-    entrada = validarEntradas()
+    entrada = validarEntradaCEP()
 
     if entrada == 0:
         break
     else:
         ceps.append(entrada)
 
+# Consultando os CEPs via API
 
 url = "https://viacep.com.br/ws/{entradaCep}/json/"
 
-info = []
+# Lista de dicionários
+resultados = []
 
-for c in ceps:
-    response = requests.get(url.format(entradaCep=c))
-    resultado = response.json()
+# Percorrendo CEPs e fazendo uma request pra cada cep,
+# depois transformando em json e adicionando em "resultados"
 
-    info.append(resultado)
+for c in tqdm(ceps):
+    endereco = requests.get(url.format(entradaCep=c))
 
-print(info)
+    if endereco.status_code == 200:
+        enderecoJson = endereco.json()
+        resultados.append(enderecoJson)
 
+# Mostrando resultados
+# for r in resultados:
+#     for chave, valor in r.items():
+#         print(f"{chave} -> {valor}")
+#     print("\n")
+
+dataframe = pd.DataFrame(resultados)
+
+dataframe
+
+# Salvando os endereços de "resultados" em um arquivo JSON.
+
+# with open("exercicios-dados/python/apis/resultados.json", mode="w", encoding="utf-8") as open_file:
+#     json.dump(resultados, open_file, indent=4, ensure_ascii=False)
 
 
